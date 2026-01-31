@@ -10,7 +10,7 @@ namespace DomainModels.Models
     public class Service
     {
         [Required]
-        public string ServiceName { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string Domain { get; set; }

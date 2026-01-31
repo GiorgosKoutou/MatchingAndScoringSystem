@@ -14,11 +14,15 @@ namespace DomainModels.Models
         public int EmployeeCount { get; set; }
         public string Location { get; set; } = string.Empty;
 
-        [Range(0,5)]
-        public decimal AssessemtScore { get; set; }
+        [Range(0.0,5.0)]
+        public decimal? AssessmentScore { get; set; }
         public DateTime? LastActivityDate { get; set; }
-        public int ProjectCount { get; set; }
-        public decimal AverageProjectValue { get; set; }
+
+        [Range(0,10000)]
+        public int? ProjectCount { get; set; }
+
+        [Range(0.0, 100000000.00)]
+        public decimal? AverageProjectValue { get; set; }
         public decimal CurrentScore { get; set; }
     }
 }
