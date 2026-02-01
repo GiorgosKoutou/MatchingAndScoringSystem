@@ -7,11 +7,11 @@ namespace DomainServices.Services
     public class ProviderScoringService
     {
 
-        /// Calculates an overall provider score by aggregating multiple discrete factor methods.
-        /// The method invokes helper functions to compute factors for assessment score, recency, frequency,
-        /// monetary value, and certifications, then ignores any unknown (null) factors and averages the rest.
-        /// If no factors are available (all helpers returned null) the method returns 0m to indicate an uncomputable score.
-        /// This produces a single decimal value representing the combined weighting of the provider's attributes.
+        /// <summary>
+        /// Calculates an overall score for a provider by aggregating multiple independent scoring factors.
+        /// Each factor is computed separately, null values are ignored, and the final score is the average
+        /// of all available factors. Returns 0 when no factors can be evaluated.
+        /// </summary>
         public decimal CalculateProviderScore(DomainModels.Models.Provider provider, List<DomainModels.Models.Certification> certifications)
         {
             // Compute each discrete factor, allowing helpers to return null when input is unknown.
@@ -38,9 +38,11 @@ namespace DomainServices.Services
 
         #region Private Helper Methods
 
-        /// Determines a discrete certification factor based on the provided certifications list.
-        /// If the input is null the factor cannot be computed and null is returned. If the list exists but is empty a baseline factor of 1 is returned. 
-        /// If one or more certifications are present a higher factor of 9 is returned. This method encodes a simple ternary mapping: unknown -> null, none -> 1, any -> 9
+        /// <summary>
+        /// Computes a certification-based factor.
+        /// Returns null when certification data is unavailable, 1 when no certifications exist,
+        /// and 9 when at least one certification is present.
+        /// </summary>
         private decimal? CalculateCertificationFactor(List<DomainModels.Models.Certification>? certifications)
         { 
             if (certifications is null)
@@ -52,9 +54,11 @@ namespace DomainServices.Services
             return 9m;
         }
 
-        /// Maps a nullable assessment score into a discrete factor used in provider scoring.
-        /// If the input is null the factor cannot be computed and null is returned. For numeric values it returns 1 for low scores ( < 2.26), 3 for mid-range scores (2.26 > && < 3.76), and 9 for higher scores.
-        /// This creates a simple three-tier mapping from a continuous assessment metric into a discrete weighting factor
+        /// <summary>
+        /// Converts a provider assessment score into a discrete scoring factor.
+        /// Low, medium, and high score ranges are mapped to increasing weights.
+        /// Returns null when the assessment score is unknown.
+        /// </summary>
         private decimal? CalculateAssessmentScoreFactor(decimal? assessmentScore)
         {
             if (!assessmentScore.HasValue)
@@ -70,10 +74,11 @@ namespace DomainServices.Services
         }
 
 
-        /// Calculates a recency factor from the provider's last activity date. 
-        /// Returns null when the input date is unknown, otherwise it computes whole months elapsed since the activity (using UTC and adjusting for day-of-month) 
-        /// and maps that duration to a discrete factor: less than 6 months -> 6, 6–12 months -> 3, and more than 12 months -> 1. 
-        /// This factor is intended to be one component of the overall provider scoring calculation
+        /// <summary>
+        /// Calculates a recency factor based on the number of months since the provider's last activity.
+        /// More recent activity yields a higher score, while older activity yields lower weighting.
+        /// Returns null when the activity date is unknown.
+        /// </summary>
         private decimal? CalculateRecencyFactor(DateTime? lastActivityDate)
         {
             if (lastActivityDate is null)
@@ -94,10 +99,11 @@ namespace DomainServices.Services
             return 1m;
         }
 
-        /// Calculates a discrete frequency factor from the provider's total project count.
-        /// Returns null when the project count is unknown, otherwise it maps counts to three tiers: less than 24 projects yields a factor of 1, 
-        /// 24–48 projects yields a factor of 6, and more than 48 projects yields a factor of 12. 
-        /// This tiered factor is a component used in the provider's overall scoring computation
+        /// <summary>
+        /// Maps the provider's total number of completed projects to a frequency factor.
+        /// Higher project volume results in a higher score contribution.
+        /// Returns null when project count is unavailable.
+        /// </summary>
         private decimal? CalculateFrequencyFactor(int? projectCount)
         {
             if (!projectCount.HasValue)
@@ -112,10 +118,11 @@ namespace DomainServices.Services
             return 12m;
         }
 
-        /// Maps a nullable average project value into a discrete monetary factor used in provider scoring.
-        /// If the input is null the factor cannot be computed and null is returned. 
-        /// For numeric values it returns 1 for values below 100,000, 3 for values between 100,000 and 250,000 (inclusive), and 6 for values above 250,000.
-        /// This discrete mapping simplifies a continuous monetary metric into three weighting tiers for use in the overall provider score calculation.
+        /// <summary>
+        /// Converts the provider's average project value into a discrete monetary factor.
+        /// Higher average project values contribute a higher weighting to the final score.
+        /// Returns null when the monetary value is unknown.
+        /// </summary>
         private decimal? CalculateMonetaryValueFactor(decimal? averageProjectValue)
         {
             if(!averageProjectValue.HasValue)
