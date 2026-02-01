@@ -23,5 +23,8 @@ namespace DomainModels.Models
 
         // Navigation property to ProviderSkill so that i can see what services this provider offers
         public ICollection<ProviderSkill> Skills { get; set; } = [];
+
+        // Navigation property to ProviderCertification so that i can see what certifications this provider has
+        public ICollection<ProviderCertification> Certifications { get; set; } = [];
     }
 }
