@@ -20,5 +20,8 @@ namespace DomainModels.Models
         [Range(0.0, 100000000.00)]
         public decimal? AverageProjectValue { get; set; }
         public decimal CurrentScore { get; set; }
+
+        // Navigation property to ProviderSkill so that i can see what services this provider offers
+        public ICollection<ProviderSkill> Skills { get; set; } = [];
     }
 }
