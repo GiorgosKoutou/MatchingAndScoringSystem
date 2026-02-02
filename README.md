@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-- .NET 8 SDK or later
+- .NET SDK 8 or later (developed and tested with .NET 9)
+- 
 - Visual Studio 2022 or Visual Studio Code
 
 ## How to Run
