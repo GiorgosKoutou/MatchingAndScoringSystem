@@ -9,7 +9,6 @@ namespace MatchingAndScoringSystem.UnitTests.ServiceTests
     public class MatchingServiceTests
     {
         private List<Provider> providerList;
-        private MatchingRequest matchingRequest;
 
         [SetUp]
         public void ProviderListSetUp()
@@ -131,7 +130,7 @@ namespace MatchingAndScoringSystem.UnitTests.ServiceTests
                         new ProviderSkill
                         {
                             Service = new Service { Name = "Cloud Hosting", MaturityStage = 1 },
-                            MaxUsersSupported = 15,
+                            MaxUsersSupported = 100,
                         }
                     ]
                    }
@@ -140,10 +139,10 @@ namespace MatchingAndScoringSystem.UnitTests.ServiceTests
         }
 
         [Test]
-        public void FindTopProviders_WithExactMatches_ReturnProviderList()
+        public void FindTopProviders_WithExactMatches_ReturnMatchingResultList()
         {
             // Arrange
-            matchingRequest = new()
+            MatchingRequest matchingRequest = new()
             {
                 Requestor = new Requestor
                 {
@@ -173,10 +172,150 @@ namespace MatchingAndScoringSystem.UnitTests.ServiceTests
         }
 
         [Test]
-        public void FindTopProviders_CheckProperRanking_ReturnListWithProperRanking()
+        public void FindTopProviders_NoProvidersMatch_ReturnEmptyList()
+        {
+            // Arrange
+            MatchingRequest matchingRequest = new()
+            {
+                Requestor = new Requestor
+                {
+                    CostProfile = CostProfile.Medium,
+                    DigitalMaturityIndex = 3,
+                    Location = "Athens"
+                },
+                Service = new Service
+                {
+                    Name = "WebSite"
+                },
+                NumberOfUsers = 1000,
+                LocationProximityRequired = true
+            };
+            var scoringService = new ProviderScoringService();
+            var matchingService = new MatchingService(scoringService);
+
+            // Act
+            var resultList = matchingService.FindTopProviders(matchingRequest, providerList);
+
+            // Assert
+            Assert.That(resultList, Is.Empty);
+        }
+
+        [Test]
+        public void FindTopProviders_WithFewerThanThreeMatches_ReturnMatchingResultList()
+        {
+            // Arrange
+            MatchingRequest matchingRequest = new()
+            {
+                Requestor = new Requestor
+                {
+                    CostProfile = CostProfile.Medium,
+                    DigitalMaturityIndex = 3,
+                    Location = "Thessaloniki"
+                },
+                Service = new Service
+                {
+                    Name = "WebSite"
+                },
+                NumberOfUsers = 100,
+                LocationProximityRequired = true
+            };
+
+            var newProviderList = providerList =
+            [
+
+               // First Provider
+               new Provider
+                {
+                    CompanyName = "Provider A",
+                    AssessmentScore = 3.8m,
+                    LastActivityDate = DateTime.UtcNow.AddMonths(-10),
+                    ProjectCount = 15,
+                    AverageProjectValue = 200000m,
+                    EmployeeCount = 7,
+                    Location = "Athens",
+                    Certifications =
+                    [
+                        new ProviderCertification
+                        {
+                            Certification = new Certification { Name = "CertA" },
+                        }
+                    ],
+                    Skills =
+                    [
+                        new ProviderSkill
+                        {
+                            Service = new Service { Name = "WebSite" , MaturityStage = 3},
+                            MaxUsersSupported = 100,
+                        }
+                    ]
+                },
+                // Second Provider
+                new Provider
+                {
+                    CompanyName = "Provider B",
+                    AssessmentScore = 5.0m,
+                    LastActivityDate = DateTime.UtcNow.AddMonths(-5),
+                    ProjectCount = 35,
+                    AverageProjectValue = 500000m,
+                    EmployeeCount = 8,
+                    Location = "Athens",
+                    Certifications =
+                    [
+                        new ProviderCertification
+                        {
+                            Certification = new Certification { Name = "CertB" },
+                        }
+                    ],
+                    Skills =
+                    [
+                        new ProviderSkill
+                        {
+                            Service = new Service { Name = "WebSite", MaturityStage = 3 },
+                            MaxUsersSupported = 100,
+                        }
+                    ]
+                },
+                // Third Provider
+                 new Provider
+                {
+                    CompanyName = "Provider C",
+                    AssessmentScore = 1.5m,
+                    LastActivityDate = DateTime.UtcNow.AddMonths(-20),
+                    ProjectCount = 5,
+                    AverageProjectValue = 99000m,
+                    EmployeeCount = 40,
+                    Location = "Athens",
+                    Certifications = [],
+                    Skills =
+                    [
+                        new ProviderSkill
+                        {
+                            Service = new Service { Name = "Cloud Hosting", MaturityStage = 4 },
+                            MaxUsersSupported = 65,
+                        }
+                    ]
+                }
+            ];
+
+            var scoringService = new ProviderScoringService();
+
+            var matchingService = new MatchingService(scoringService);
+
+            // Act
+            var resultList = matchingService.FindTopProviders(matchingRequest, newProviderList);
+
+            // Assert
+            Assert.That(resultList.Count(), Is.EqualTo(2));
+            Assert.That(resultList.Select(rs => rs.Provider.CompanyName),
+                                        Is.EqualTo(new[] { "Provider B", "Provider A" }));  
+
+        }
+
+        [Test]
+        public void FindTopProviders_TestProperRanking_ReturnMatchingResultListWithProperRanking()
         {
             // Arrange 
-            matchingRequest = new()
+            MatchingRequest matchingRequest = new()
             {
                 Requestor = new Requestor
                 {
@@ -204,32 +343,72 @@ namespace MatchingAndScoringSystem.UnitTests.ServiceTests
         }
 
         [Test]
-        public void FindTopProviders_NoProvidersMatch_ReturnEmptyList()
+        public void FindTopProviders_WithFilterByUserCapcity_ReturnMatchingResultList()
         {
             // Arrange
-            matchingRequest = new()
+            MatchingRequest matchingRequest = new()
             {
                 Requestor = new Requestor
                 {
                     CostProfile = CostProfile.Medium,
-                    DigitalMaturityIndex = 3,
-                    Location = "Athens"
+                    DigitalMaturityIndex = 1,
+                    Location = "Drama"
                 },
                 Service = new Service
                 {
-                    Name = "WebSite"
+                    Name = "Cloud Hosting"
                 },
-                NumberOfUsers = 1000,
-                LocationProximityRequired = true
+                NumberOfUsers = 100,
+                LocationProximityRequired = false
             };
+
             var scoringService = new ProviderScoringService();
+
+            var matchingService = new MatchingService(scoringService);
+
+            // Act
+
+            var resultList = matchingService.FindTopProviders(matchingRequest, providerList);
+
+            // Assert
+            Assert.That(resultList.Count(), Is.EqualTo(2));
+            Assert.That(resultList.Select(rs => rs.Provider.CompanyName),
+                                           Is.EqualTo(new [] {"Provider D", "Provider E"}));
+        }
+
+        [Test]
+        public void FindTopProviders_WithCostProfilMatching_ReturnMatchingResultList()
+        {
+            // Arrange
+            MatchingRequest matchingRequest = new()
+            {
+                Requestor = new Requestor
+                {
+                    CostProfile = CostProfile.High,
+                    DigitalMaturityIndex = 1,
+                    Location = "Drama"
+                },
+                Service = new Service
+                {
+                    Name = "Cloud Hosting"
+                },
+                NumberOfUsers = 100,
+                LocationProximityRequired = false
+            };
+
+            var scoringService = new ProviderScoringService();
+
             var matchingService = new MatchingService(scoringService);
 
             // Act
             var resultList = matchingService.FindTopProviders(matchingRequest, providerList);
 
             // Assert
-            Assert.That(resultList, Is.Empty);
+            Assert.That(resultList.Count(), Is.EqualTo(1));
+            Assert.That(resultList.Select(rs => rs.Provider.CompanyName),
+                                           Is.EqualTo(new[] { "Provider D" }));
         }
+
+      
     }
 }
