@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainModels", "DomainModel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainServices", "Services\DomainServices.csproj", "{C3D7BDFE-CCF1-43D0-AEC1-BAB023BC8AA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchingAndScoringSystem.UnitTests", "MatchingAndScoringSystem.UnitTests\MatchingAndScoringSystem.UnitTests.csproj", "{14CE4CA0-2BD7-4C35-A89B-D668D5D3C1E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C3D7BDFE-CCF1-43D0-AEC1-BAB023BC8AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3D7BDFE-CCF1-43D0-AEC1-BAB023BC8AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3D7BDFE-CCF1-43D0-AEC1-BAB023BC8AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14CE4CA0-2BD7-4C35-A89B-D668D5D3C1E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14CE4CA0-2BD7-4C35-A89B-D668D5D3C1E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14CE4CA0-2BD7-4C35-A89B-D668D5D3C1E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14CE4CA0-2BD7-4C35-A89B-D668D5D3C1E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
