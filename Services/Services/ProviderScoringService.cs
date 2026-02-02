@@ -36,7 +36,7 @@ namespace DomainServices.Services
         }
 
 
-        #region Private Helper Methods
+        #region Private Methods
 
         /// <summary>
         /// Computes a certification-based factor.
