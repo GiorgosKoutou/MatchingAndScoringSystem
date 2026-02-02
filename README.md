@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - .NET 8 SDK or later
-- Visual Studio 2022, Visual Studio Code, or Rider
+- Visual Studio 2022 or Visual Studio Code
 
 ## How to Run
 
